@@ -23,3 +23,9 @@
     top: 22px;
     right: 5px;
 }
+
+#content .read_more {
+    display: inline-block;
+    padding: 10px 0;
+    float: right;
+}
