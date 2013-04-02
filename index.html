@@ -10,7 +10,7 @@ title: Three-Person-Walking
         <p class="text-info" style="line-height: 28px;">
            在阿里-UX 4月1日的月会上，木头提出在OPOA页面中为啥url在hash部分#号后面加上!号？随即被身边的波哥问到为什么，答曰：不知道！后来问之，这个叹号是针对搜索引擎的约定。具体解答如下。 
         </p>
-        <span class="date">{{ post.date | date: "%A %y-%m-%d" }}</span>
+        <span class="date">{{ post.date | date: "%A %y-%m-%d %I:%M" }}</span>
         <div class="tags">
             {% if post.tags %} 
                 <span class="label label-info">{{post.tags}}</span>
