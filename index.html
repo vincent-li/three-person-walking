@@ -7,13 +7,19 @@ title: Three-Person-Walking
         <h3>
             <a href="{{site.url}}{{post.url}}">{{ post.title }}</a>
         </h3>
-        <p>
+        <p class="text-info">
            在阿里-UX 4月1日的月会上，木头提出在OPOA页面中为啥url在hash部分#号后面加上!号？随即被身边的波哥问到为什么，答曰：不知道！后来问之，这个叹号是针对搜索引擎的约定。具体解答如下。 
         </p>
-        <span class="date">{{ post.date | date_to_string }}</span>
-        <div class="tags">{{post.tags}}</div>
-        <div class="read_more">
-            <a href="{{site.url}}{{post.url}}">>阅读全文</a>
+        <span class="date">{{ date_to_string }}</span>
+        <div class="tags">
+            {% if post.tags %}
+                {% for tag in (0..post.tags.split(%r{,\s*}).length) %}
+                    <span class="label label-info">{{tag}}</span>
+                {% endfor %}
+            {% endif %}
         </div>
+        <p class="text-right">
+            <a href="{{site.url}}{{post.url}}">&gt;阅读全文</a>
+        </p>
     </div>
 {% endfor %}
