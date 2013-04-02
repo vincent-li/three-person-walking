@@ -2,15 +2,15 @@
 layout: default
 title: Three-Person-Walking
 ---
-{% for post in site.posts %}
+{% for post in paginator.posts %}
     <div class="post">
         <h2 class="title">
-            <a href="{{site.url}}{{post.url}}">{{post.title}}</a>
+            <a href="{{site.url}}{{post.url}}">{{ post.title }}</a>
         </h2>
 
         <div class="post_body">
             <div class="p_part">
-                <p>{{post.short}}</p>
+                <p>{{ post.short }}</p>
             </div>
 
             <div class="p_part">
@@ -24,12 +24,9 @@ title: Three-Person-Walking
             </div>
         </div>
 
-        <span class="date">{{date_to_string}}</span>
+        <span class="date">{{ post.date | date_to_string }}</span>
 
-        <div class="tags">
-            
-        </div>
-
+        <div class="tags">{{post.tags}}</div>
 
         <div class="read_more">
             <a href="{{site.url}}{{post.url}}">>阅读全文</a>
