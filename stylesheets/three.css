@@ -5,7 +5,7 @@
     position: relative;
 }
 
-#content h2.title, #content h1 {
+#main_content h2.title, #content h1 {
     color: #333;
     font-size: 1.8em;
     line-height: 2.1em;
@@ -16,7 +16,7 @@
     width: 900px;
 }
 
-#content .post .date {
+#main_content .post .date {
     font-size: 0.85em;
     padding-right: 5px;
     position: absolute;
@@ -24,7 +24,7 @@
     right: 5px;
 }
 
-#content .read_more {
+#main_content .read_more {
     display: inline-block;
     padding: 10px 0;
     float: right;
