@@ -14,7 +14,7 @@ title: Three-Person-Walking
         <div class="tags">
             {% if post.tags %}
             {{post.tags}}
-                {%for tag in  post.tags.split(%r{,\s*})%}
+                {%for tag in  post.tags.split(/,\s*/)%}
                     <span class="label label-info">{{tag}}</span>
                 {% endfor %}
             {% endif %}
