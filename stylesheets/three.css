@@ -1,0 +1,17 @@
+#main_content .post{
+    padding-bottom: 45px;
+    margin-bottom: 65px;
+    border-bottom: 1px solid #e8e8e8;
+    position: relative;
+}
+
+#content h2.title, #content h1 {
+    color: #333;
+    font-size: 1.8em;
+    line-height: 2.1em;
+    text-align: left;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    width: 900px;
+}

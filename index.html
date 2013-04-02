@@ -5,7 +5,7 @@ title: Three-Person-Walking
 {% for post in site.posts %}
     <div class="post">
         <h2 class="title">
-            <a href="{{post.url}}">{{post.title}}</a>
+            <a href="{{site.url}}{{post.url}}">{{post.title}}</a>
         </h2>
 
         <div class="post_body">
@@ -32,7 +32,7 @@ title: Three-Person-Walking
 
 
         <div class="read_more">
-            <a href="{{post.url}}">>阅读全文</a>
+            <a href="{{site.url}}{{post.url}}">>阅读全文</a>
         </div>
 
     </div>
