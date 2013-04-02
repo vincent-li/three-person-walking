@@ -1,5 +1,8 @@
 markdown: rdiscount
 pygments: true
-baseurl:    /three-person-walking
+lsi: true
+exclude: ['README.markdown', 'README_FOR_COLLABORATORS.markdown', 'Gemfile.lock', 'Gemfile']
+production: false
+baseurl:/three-person-walking
 url: http://vincent-li.github.com/three-person-walking
 paginate:5
