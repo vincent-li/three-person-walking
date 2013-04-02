@@ -13,7 +13,7 @@ title: Three-Person-Walking
         <span class="date">{{ date_to_string }}</span>
         <div class="tags">
             {% if post.tags %}
-                {% for tag in (0..post.tags.split(%r{,\s*}).length) %}
+                {%for tag in  post.tags.split(%r{,\s*})%}
                     <span class="label label-info">{{tag}}</span>
                 {% endfor %}
             {% endif %}
