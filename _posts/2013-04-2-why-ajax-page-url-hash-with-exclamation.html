@@ -6,11 +6,19 @@ tags : [opoa,url,hash]
 ---
 {% include JB/setup %}
 
-<p>在阿里-UX 4月1日的月会上，木头提出在OPOA页面中为啥url在hash部分#号后面加上!号？随即被身边的波哥问到为什么，答曰：不知道！后来问之，这个叹号是针对搜索引擎的约定。具体解答如下。</p>
+<p>在阿里-UX 4月1日的月会上，木头提出在OPOA页面中为啥url在hash部分#号后面加上!号？随即被身边的波哥问到为什么，答曰：不知道！后来问之，这个叹号是针对搜索引擎(以下简称Engine)的约定。具体解答如下。</p>
 
-<h4>搜索引擎抓取页面的过程</h4>
-<p>简单的说就是爬虫会获取到一些ajax页面的url，类似于文章题目中的连接。其中在hash部分会使用#!标识。然后爬虫引擎会根据#!判断它是一个ajax页面，然后就会请求一个网页快照--这个网页的url略有变化。而服务端就要相应的提供这么一个网页快照。参考下图</p>
+<h4 class="label-info">搜索引擎抓取页面的过程</h4>
+<p>简单的说就是Engine会获取到一些ajax页面的url，类似于文章题目中的连接。其中在hash部分会使用#!标识。然后Engine会根据!判断它是一个ajax页面，然后就会请求一个网页快照--这个网页的url略有变化。而服务端就要相应的提供这么一个网页快照。参考下图</p>
 
 <img src="{{site.url}}/images/demos/2013-4-2/crawlerserver2.png">
 
-<h4>url的变化</h4>
+<h4 class="label-info">!的作用</h4>
+<p>叹号的作用就好像一个标志，当Engine获取到url的时候会检测下，如果url hash部分(#以后)以叹号(!)开头，Engine认为这是一个ajax的网页。</p>
+<form class="bs-docs-example" style="padding-bottom: 15px;">
+   <p>www.example.com/ajax.html#key=value</p>         
+</form>
+<p>这是我们通常的做法，如果你想让Engine识别，那就变成下面这样</p>
+<form class="bs-docs-example" style="padding-bottom: 15px;">
+   <p>www.example.com/ajax.html<code>#!</code>key=value</p>         
+</form>
