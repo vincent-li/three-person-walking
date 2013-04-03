@@ -1,0 +1,12 @@
+---
+layout: post
+title: ajax动态页面url如github.com#!param=p中!号的意义
+tags : [opoa,url,hash]
+---
+{% include JB/setup %}
+
+<p>在阿里-UX 4月1日的月会上，木头提出在OPOA页面中为啥url在hash部分#号后面加上!号？随即被身边的波哥问到为什么，答曰：不知道！后来问之，这个叹号是针对搜索引擎的约定。具体解答如下。</p>
+
+<h3>搜索引擎抓取页面的过程</h3>
+<p>Briefly, the solution works as follows: the crawler finds a pretty AJAX URL (that is, a URL containing a #! hash fragment). It then requests the content for this URL from your server in a slightly modified form. Your web server returns the content in the form of an HTML snapshot, which is then processed by the crawler. The search results will show the original URL.</p>
+<img src="{{site.url}}/images/demos/2013-4-2/crawlerserver2.png">
