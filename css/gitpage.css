@@ -22,7 +22,7 @@ Full-Width Styles
 #forkme_banner {
   display: block;
   position: absolute;
-  top:0;
+  top:43px;
   right: 10px;
   z-index: 10;
   padding: 10px 50px 10px 10px;
@@ -114,4 +114,18 @@ Full-Width Styles
 
 #footer_wrap {
   background: #212121;
+  color: #FFF;
+}
+
+/*给navbar样式加上float属性*/
+.navbar{
+  float: left;
+  width: 100%;
+}
+
+a{
+  text-decoration: none;
+}
+a:hover{
+  text-decoration: none;
 }
