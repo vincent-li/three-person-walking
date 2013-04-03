@@ -15,14 +15,25 @@ tags : [opoa,url,hash]
 
 <h4 class="text-info">!的作用</h4>
 <p>叹号的作用就好像一个标志，当Engine获取到url的时候会检测下，如果url hash部分(#以后)以叹号(!)开头，Engine认为这是一个ajax的网页。</p>
-<form class="bs-docs-example" style="padding:0 0 15px 66px;">
-   <p>www.example.com/ajax.html<em>#</em>key=value</p>         
+<form class="bs-docs-example" style="padding-left:66px;">
+   <p>www.example.com/ajax.html<em class="text-error">#</em>key=value</p>         
 </form>
 <p>这是我们通常的做法，如果你想让Engine识别，那就变成下面这样</p>
-<form class="bs-docs-example" style="padding:0 0 15px 66px;">
-   <p>www.example.com/ajax.html<em>#!</em>key=value</p>         
+<form class="bs-docs-example" style="padding-left:66px;">
+   <p>www.example.com/ajax.html<em class="text-error">#!</em>key=value</p>         
 </form>
 <p>Engine拿到url后，会改变这个url，然后发起请求。这个改变规则就是把!号以后的参数部分变成_escaped_fragment_的值。如下</p>
-<form class="bs-docs-example" style="padding:0 0 15px 66px;">
+<form class="bs-docs-example" style="padding-left:66px;">
    <p>www.example.com/ajax.html?<em class="text-error">_escaped_fragment_=</em>key=value</p>         
 </form>
+<p>某君会思考为什么这么做，google官方给出了2个理由。来看下</p>
+<dl class="dl-horizontal">
+  <dt>Hash fragments are never (by specification) sent to the server as part of an HTTP request.</dt>
+  <dd>按照规范hash段是不会作为HTTP请求的一部分传到server端的。那Engine就要想办法让server知道请求的页面是什么。所以使用参数的方式传入。</dd>
+  <dt>Your server, on the other hand, needs to know that it has to return an HTML snapshot, rather than the normal page sent to the browser.</dt>
+  <dd>上面说了，你的server也需要知道Engine请求的页面，而不是hash所标示的页面。也就是我们opoa需要根据hash值去请求数据最后组装页面。</dd>
+</dl>
+<h4 class="text-info">总结</h4>
+<p>问题就是搜索端虽然可以拿到url，但是无法把hash值原封不动的传到server端，那么就想了办法，把这个值带到一个约定的参数<em class="text-error">_escaped_fragment_</em>里面。当然这是简单的解释。</p>
+<p>原文链接发出来：</p>
+<a href="https://developers.google.com/webmasters/ajax-crawling/docs/getting-started?hl=zh-CN"><code>https://developers.google.com/webmasters/ajax-crawling/docs/getting-started?hl=zh-CN</code></a>
