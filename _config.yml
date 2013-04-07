@@ -5,7 +5,7 @@ permalink: /:categories/:year/:month/:day/:title
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 auto: true
 pygments: true
-url : http://vincent-li.github.com/three-person-walking
+url : http://ibashao.com
 # this is which template you use
 # markdown: rdiscount
 
