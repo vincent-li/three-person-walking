@@ -1,0 +1,60 @@
+---
+layout: post
+title: jsonp请求一段html代码报错
+subtitle: 探讨怎么去解决这个问题
+tags : [jsonp]
+---
+
+{% include JB/setup %}
+
+<p>最近遇到个需求，大致描述如下，我需要在页面上展示一个轮播效果，轮播的图片是由一个php页面提供，跨域返回一段html代码。当我使用jquery jsonp请求的时候报错，Uncaught SyntaxError: Unexpected token <，查看连接状态，发现连接status ==> 200，response是我需要的代码片段，形式如下</p>
+
+<pre>
+    <code>
+        &gl;ul&gt;&gl;li&gt;&gl;img src="http://img.com/example.png"&gt;&gl;li/&gt;&gl;ul/&gt;
+    </code>
+</pre>
+
+<h4 class="text-info">借此深入了解下jsonp，以下内容摘自网络，如有雷同，肯定不是巧合！</h4>
+
+<h4 class="text-info">简介</h4>
+<p>Asynchronous JavaScript and XML (Ajax) 是驱动新一代 Web 站点（流行术语为 Web 2.0 站点）的关键技术。Ajax 允许在不干扰 Web 应用程序的显示和行为的情况下在后台进行数据检索。使用 XMLHttpRequest 函数获取数据，它是一种 API，允许客户端 JavaScript 通过 HTTP 连接到远程服务器。由于受到浏览器的限制，该方法不允许跨域通信。如果尝试从不同的域请求数据，会出现安全错误。如果能控制数据驻留的远程服务器并且每个请求都前往同一域，就可以避免这些安全错误。但是，如果仅停留在自己的服务器上，Web 应用程序还有什么用处呢？如果需要从多个第三方服务器收集数据时，又该怎么办？</p>
+
+<h4 class="text-info">理解同源策略限制</h4>
+<p>同源策略阻止从一个域上加载的脚本获取或操作另一个域上的文档属性。也就是说，受到请求的 URL 的域必须与当前 Web 页面的域相同。这意味着浏览器隔离来自不同源的内容，以防止它们之间的操作。这个浏览器策略很旧，从 Netscape Navigator 2.0 版本开始就存在。
+克服该限制的一个相对简单的方法是让 Web 页面向它源自的 Web 服务器请求数据，并且让 Web 服务器像代理一样将请求转发给真正的第三方服务器。尽管该技术获得了普遍使用，但它是不可伸缩的。另一种方式是使用框架要素在当前 Web 页面中创建新区域，并且使用 GET 请求获取任何第三方资源。不过，获取资源后，框架中的内容会受到同源策略的限制。
+克服该限制更理想方法是在 Web 页面中插入动态脚本元素，该页面源指向其他域中的服务 URL 并且在自身脚本中获取数据。脚本加载时它开始执行。该方法是可行的，因为同源策略不阻止动态脚本插入，并且将脚本看作是从提供 Web 页面的域上加载的。但如果该脚本尝试从另一个域上加载文档，就不会成功。幸运的是，通过添加 JavaScript Object Notation (JSON) 可以改进该技术。</p>
+
+<h4 class="text-info">JSON 和 JSONP</h4>
+<p>JSON 是用于在浏览器和服务器之间交换信息的轻量级数据格式（与 XML 相比）。JOSON 依赖于 JavaScript 开发人员，因为它是 JavaScript 对象的字符串表示。例如，假设有一个含两个属性的 ticker 对象：symbol 和 price。这是在 JavaScript 中定义 ticker 对象的方式：</p>
+
+<code>var ticker = {symbol: 'IBM', price: 91.42};</code>
+
+<p>并且这是它的 JSON 表示方式：</p>
+
+<code>{symbol: 'IBM', price: 91.42}</code>
+
+<p>动态脚本的插入</p>
+<pre>
+    <code>
+        &gl;script type="text/javascript"&glt;
+            // This is our function to be called with JSON data
+            function showPrice(data) {
+                alert("Symbol: " + data.symbol + ", Price: " + data.price);
+            }
+            var url = “ticker.js”; // URL of the external script
+            // this shows dynamic script insertion
+            var script = document.createElement('script');
+            script.setAttribute('src', url);
+
+            // load the script
+            document.getElementsByTagName('head')[0].appendChild(script); 
+        &gl;/script&glt;
+    </code>
+</pre>
+<p>前面已经提到，同源策略不阻止将动态脚本元素插入文档中。也就是说，可以动态插入来自不同域的 JavaScript，并且这些域都携带 JSON 数据。这其实是真正的 JSONP（JSON with Padding）：打包在函数调用中的 JSON 数据。注意，为了完成该操作，Web 页面必须在插入时具有已经定义好的回调函数，也就是我们例子中的 showPrice()。</p>
+<p>不过，所谓的 JSONP 服务（或 Remote JSON Service）是一种带有附加功能的 Web 服务，该功能支持在特定于用户的函数调用中打包返回的 JSON 数据。这种方法依赖于接受回调函数名作为请求参数的远程服务。然后该服务生成对该函数的调用，将 JSON 数据作为参数传递，在到达客户端时将其插入 Web 页面并开始执行。</p>
+
+<h4 class="text-info">说说我的问题</h4>
+<p>我的问题出在了如果我们跨域的访问返回的是带有&gl;等html符号的字符串，然后动态加载执行jsonp回调函数的时候，浏览器会抛出error：Uncaught SyntaxError: Unexpected token &gl;。参考了jquery的jsonp实现目前没有发现在js端很好的解决办法。只有服务端返回的数据时纯字符串或者json格式，这样就可以避免执行callback函数时候的错误。不过发现jquery有load函数可以load html代码，但是这个函数没有跨域的功能。看来跨域的访问问题还是要从浏览器方面获取解决办法。</p>
+

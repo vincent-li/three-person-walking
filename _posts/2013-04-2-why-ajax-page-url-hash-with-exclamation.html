@@ -32,7 +32,7 @@ tags : [opoa,url,hash]
 <p>按照规范hash段是不会作为HTTP请求的一部分传到server端的。那Engine就要想办法让server知道请求的页面是什么。所以使用参数的方式传入。</p>
 <code>Your server, on the other hand, needs to know that it has to return an HTML snapshot, </code>
 <code>rather than the normal page sent to the browser.</code>
-<p>上面说了，你的server也需要知道Engine请求的页面，而不是hash所标示的页面。也就是我们opoa需要根据hash值去请求数据最后组装页面。</p>
+<p>上面说了，你的server也需要知道Engine请求的页面，而不是hash所标识的页面。也就是我们opoa需要根据hash值去请求数据最后组装页面。</p>
 
 <h4 class="text-info">总结</h4>
 <p>问题就是搜索端虽然可以拿到url，但是无法把hash值原封不动的传到server端，那么就想了办法，把这个值带到一个约定的参数<em class="text-error">_escaped_fragment_</em>里面。当然这是简单的解释。</p>
