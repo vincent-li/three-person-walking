@@ -13,7 +13,7 @@ tagline: 知之为知之，不知为不知，是知也！
             {{ post.summary }}
         </p>
         {% endif %}
-        <span class="date">{{ post.date | date: "%A %y-%m-%d %I:%M" }}</span>
+        <span class="date">{{ post.date | date: "%A %y-%m-%d" }}</span>
         <div class="tags">
             {% for tag in post.tags %} 
                 <span class="label label-info">{{tag}}</span>
