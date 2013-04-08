@@ -11,7 +11,7 @@ tags : [jsonp]
 
 <pre>
     <code>
-        <ul><li><img src="http://img.com/example.png"/></li></ul>
+        &lt;ul&gt;&lt;li&gt;&lt;img src="http://img.com/example.png"/>&lt;/li&gt;&lt;/ul&gt;
     </code>
 </pre>
 
@@ -37,7 +37,7 @@ tags : [jsonp]
 <p>动态脚本的插入</p>
 <pre>
     <code>
-        <script type="text/javascript">
+        &lt;script type="text/javascript"&gt;
             // This is our function to be called with JSON data
             function showPrice(data) {
                 alert("Symbol: " + data.symbol + ", Price: " + data.price);
@@ -49,7 +49,7 @@ tags : [jsonp]
 
             // load the script
             document.getElementsByTagName('head')[0].appendChild(script); 
-        </script>
+        &lt;/script&gt;
     </code>
 </pre>
 <p>前面已经提到，同源策略不阻止将动态脚本元素插入文档中。也就是说，可以动态插入来自不同域的 JavaScript，并且这些域都携带 JSON 数据。这其实是真正的 JSONP（JSON with Padding）：打包在函数调用中的 JSON 数据。注意，为了完成该操作，Web 页面必须在插入时具有已经定义好的回调函数，也就是我们例子中的 showPrice()。</p>
