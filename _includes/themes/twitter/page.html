@@ -1,7 +1,8 @@
+{% if page.tagline %}
 <div class="page-header">
-  {% if page.tagline %}<h1> <small>{{ page.tagline }}</small></h1>{% endif %}
+  <h1> <small>{{ page.tagline }}</small></h1>
 </div>
-
+{% endif %}
 <div class="row-fluid">
   <div class="span12">
     {{ content }}
