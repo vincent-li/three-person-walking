@@ -9,7 +9,7 @@ summary : "今天和同事讨论了关于json字符串解析成对象的方法�
 
 {% include JB/setup %}
 
-<p>{{ post.summary }}</p>
+<p>今天和同事讨论了关于json字符串解析成对象的方法问题，很多浏览器都实现了JSON对象，使用这个对象的parse方法解析，也有使用new Fuction(return jsonstring)的方式解析。按照常理肯定用浏览器原生方法会更优秀，但是这是为啥呢。因为chrome的开源，让我有兴趣去翻阅chrome源码，来看看到底如何?</p>
 
 <h4 class="text-info">我们从这里开始</h4>
 <p>下面来看一段关于jquery的parse json的代码。</p>
