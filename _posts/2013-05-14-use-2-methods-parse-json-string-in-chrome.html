@@ -1,0 +1,111 @@
+---
+layout: post
+title: 2中方式解析json字符串的优劣
+subtitle: 从chrome源代码中找寻答案
+category : lessons
+tags : [json,v8,chrome]
+summary : "今天和同事讨论了关于json字符串解析成对象的方法问题，很多浏览器都实现了JSON对象，使用这个对象的parse方法解析，也有使用new Fuction(return jsonstring)的方式解析。按照常理肯定用浏览器原生方法会更优秀，但是这是为啥呢。因为chrome的开源，让我有兴趣去翻阅chrome源码，来看看到底如何......"
+---
+
+{% include JB/setup %}
+
+<p>{{ post.summary }}</p>
+
+<h4 class="text-info">我们从这里开始</h4>
+<p>下面来看一段关于jquery的parse json的代码。</p>
+
+<pre>
+    <code>
+        parseJSON: function( data ) {
+            if ( typeof data !== "string" || !data ) {
+                return null;
+            }
+
+            // Make sure leading/trailing whitespace is removed (IE can't handle it)
+            data = jQuery.trim( data );
+
+            // Attempt to parse using the native JSON parser first
+            if ( window.JSON && window.JSON.parse ) {
+                return window.JSON.parse( data );
+            }
+
+            // Make sure the incoming data is actual JSON
+            // Logic borrowed from http://json.org/json2.js
+            if ( rvalidchars.test( data.replace( rvalidescape, "@" )
+                .replace( rvalidtokens, "]" )
+                .replace( rvalidbraces, "")) ) {
+
+                return ( new Function( "return " + data ) )();
+
+            }
+            jQuery.error( "Invalid JSON: " + data );
+        }
+    </code>
+</pre>
+
+<p>主意观察的同学发现，其中优先使用的是browser实现的<code>window.JSON.parse</code>，如果不支持该方法，才会使用<code>new Function( "return " + data )</code></p>
+
+<p>至于有些同学对于Function函数有疑惑的话，可以看下<a href="http://dmitrysoshnikov.com/ecmascript/chapter-5-functions/" target="_blank">ECMA-262 Funciton</a>。</p>
+
+<p>本文其实并不想纠结于孰好孰坏的问题，结果是显而易见的。只是通过这个点来探究下chrome和v8而已。</p>
+
+<h4 class="text-info">探究下代码实现</h4>
+
+<p><code>window.JSON</code>对象是browser实现的，以下以chrome为例。chrome的js解析引擎是v8，虽然都是些c++代码，但是我们也可以勉强看看。</p>
+
+<img src="{{site.url}}/images/demos/2013-5-14/1.jpg">
+<p>上图是截自v8的源码目录，可以看出v8引擎已经实现了JSON对象的parse和stringifier方法。</p>
+
+<pre>
+    <code>
+          Handle<String> ParseJsonString() {
+            return ScanJsonString<false>();
+          }
+
+          bool ParseJsonString(Handle<String> expected) {
+            int length = expected->length();
+            if (source_->length() - position_ - 1 > length) {
+              AssertNoAllocation no_gc;
+              String::FlatContent content = expected->GetFlatContent();
+              if (content.IsAscii()) {
+                ASSERT_EQ('"', c0_);
+                const uint8_t* input_chars = seq_source_->GetChars() + position_ + 1;
+                const uint8_t* expected_chars = content.ToOneByteVector().start();
+                for (int i = 0; i < length; i++) {
+                  uint8_t c0 = input_chars[i];
+                  if (c0 != expected_chars[i] ||
+                      c0 == '"' || c0 < 0x20 || c0 == '\\') {
+                    return false;
+                  }
+                }
+                if (input_chars[length] == '"') {
+                  position_ = position_ + length + 1;
+                  AdvanceSkipWhitespace();
+                  return true;
+                }
+              }
+            }
+            return false;
+          }
+
+          Handle<String> ParseJsonInternalizedString() {
+            return ScanJsonString<true>();
+          }
+    </code>
+</pre>
+
+<p>上面是json-parse.h的部分代码，其实看到<code>ScanJsonString</code>方法才是真正执行json parse的方法。具体内容太多就不贴了。如果对源码感兴趣。可以去google文档查阅。<a href="http://code.google.com/p/v8/" target="_blank">http://code.google.com/p/v8/</a></p>
+
+<p><code>return (new Function( "return " + data ))()</code>这种方式就略显笨拙了。假如你的data是这样的==>'{"a":0,"b":"x"}',那么上面的干了啥事呢。</p>
+
+<pre>    
+    <code>
+        var t = fucntion(){
+            return {"a":0,"b":"x"};
+        }
+        return t();
+    </code>
+</pre>
+<p>大致可以明白了，其实就是创建一个函数然后把函数的执行内容使用json字符串去构建，return出来就好了。很明显多了很多步不需要的步骤。最终构建函数的时候，字符串依然会使用v8 parse成对象返回。但是构建函数就是多余的消耗。</p>
+
+<p>小结：此处以chrome v8为例子，我想大概支持JSON对象的浏览器也做出了相应的实现。标准时一致的。</p>
