@@ -83,7 +83,7 @@
 
 body {
   position: relative;
-  font: 12px/1.5 tahoma, "Microsoft YaHei" ! important;
+  font: 12px/1.5 "Microsoft Yahei", "tahoma", sans-serif;
 }
 
 /* Code in headings */
