@@ -9,6 +9,8 @@ summary : "最近遇到个需求，大致描述如下，我需要在页面上展
 
 {% include JB/setup %}
 
+<div id="J_content">
+
 <p>最近遇到个需求，大致描述如下，我需要在页面上展示一个轮播效果，轮播的图片是由一个php页面提供，跨域返回一段html代码。当我使用jquery jsonp请求的时候报错，Uncaught SyntaxError: Unexpected token <，查看连接状态，发现连接status ==> 200，response是我需要的代码片段，形式如下</p>
 
 <pre>
@@ -59,4 +61,6 @@ summary : "最近遇到个需求，大致描述如下，我需要在页面上展
 
 <h4 class="text-info">说说我的问题</h4>
 <p>我的问题出在了如果我们跨域的访问返回的是带有<等html符号的字符串，然后动态加载执行jsonp回调函数的时候，浏览器会抛出error：Uncaught SyntaxError: Unexpected token <;。参考了jquery的jsonp实现目前没有发现在js端很好的解决办法。只有服务端返回的数据时纯字符串或者json格式，这样就可以避免执行callback函数时候的错误。不过发现jquery有load函数可以load html代码，但是这个函数没有跨域的功能。看来跨域的访问问题还是要从浏览器方面获取解决办法。</p>
+
+</div>
 
