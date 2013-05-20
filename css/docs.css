@@ -1117,3 +1117,7 @@ form.bs-docs-example {
   line-height: 1.8;
   margin-bottom: 16px;
 }
+
+#main_content{
+  font-size: 14px;
+}
