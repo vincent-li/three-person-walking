@@ -1,0 +1,120 @@
+---
+layout: post
+title: 贝塞尔曲线的数学原理
+subtitle: 从源头理解贝塞尔曲线的计算机实现
+category : lessons
+tags : [js,cavas,ui,bezier-curve]
+summary : "今天的周会有同事分享了html5写的模拟ps钢笔功能的例子，期间大家说到了贝塞尔曲线。这里面有个数学的问题。我觉得有必要弄清楚。此文以简单的形式记录贝塞尔曲线的方程形式到js前端的实现过程。以便以后记忆模糊的时候查阅。"
+---
+
+{% include JB/setup %}
+
+<p>今天的周会有同事分享了html5写的模拟ps钢笔功能的例子，期间大家说到了贝塞尔曲线。这里面有个数学的问题。我觉得有必要弄清楚。此文以简单的形式记录贝塞尔曲线的方程形式到js前端的实现过程。以便以后记忆模糊的时候查阅。</p>
+
+<h4 class="text-info">贝塞尔曲线</h4>
+<p><code>贝塞尔曲线</code>就是这样的一条曲线，它是依据四个位置任意的点坐标绘制出的一条光滑曲线。在历史上，研究贝塞尔曲线的人最初是按照已知曲线参数方程来确定四个点的思路设计出这种矢量曲线绘制法。贝塞尔曲线的有趣之处更在于它的<code>“皮筋效应”</code>。也就是说，随着点有规律地移动，曲线将产生皮筋伸引一样的变换，带来视觉上的冲击。1962年，法国数学家Pierre Bézier第一个研究了这种矢量绘制曲线的方法，并给出了详细的计算公式，因此按照这样的公式绘制出来的曲线就用他的姓氏来命名为贝塞尔曲线。</p>
+
+<h4 class="text-info">公式</h4>
+<p>
+  <img src="{{site.url}}/imgages/demos/2013-5-17/1.jpg">
+</p>
+
+<p>估计现在很多同学想骂娘了。其实静下心了，这些知识大部分都是加减乘除的问题，有些看不懂的就是那个多项式。我们来解释下。B(t)其实就是在t等于某个值时候的点坐标。x，y 2个值都是适用的。那么t从0到1的变化，就是曲线从P0到达最后一个点P(t)经过的点。</p>
+
+<p>
+  <img src="{{site.url}}/imgages/demos/2013-5-17/2.jpg">
+</p>
+
+<p>这里是n=1的时候，稍微懂点线性代数的同学看的出来，这是个直线方程。所以这个方程B(t)点都是分布在p0到p1的直线上。那就简单了，看看如果n=3，那么什么情况呢。</p>
+
+<p>
+  <img src="{{site.url}}/imgages/demos/2013-5-17/3.jpg">
+</p>
+
+<iframe src="{{site.url}}/demos/2013-5-17/demo1.html"></iframe>
+
+<p>上面的demo就是利用2阶贝塞尔曲线画的。并非使用原生的<code>bezierCurveTo</code>方法。而是一种原生公式的解析。看代码</p>
+
+<pre>
+  <code>
+    &lt;div style="text-align: center;"&gt;
+        &lt;canvas id="democanvas"  width="300px" height="300px"&gt;&lt;/canvas&gt;
+    &lt;/div&gt;
+    &lt;script type="text/javascript"&gt;
+        (function(){
+            var canvas = document.getElementById('democanvas');
+            var P0 = {x:60,y:200};
+            var P1 = {x:160,y:60};
+            var P2 = {x:240,y:200};
+            var t = 0;
+            if(canvas.getContext){  
+                var ctx = canvas.getContext('2d');  
+                //绘制起始点、控制点、终点  
+                strokeControlPoint(ctx);
+                strokeLine(ctx,{x:P0.x+2.5,y:P0.y-2.5},{x:P1.x-2.5,y:P1.y+2.5});
+                strokeLine(ctx,{x:P1.x+2.5,y:P1.y+2.5},{x:P2.x-2.5,y:P2.y-2.5});
+                //
+                window.setInterval(function(){
+                    strokeBezierLine(ctx,P0,P1);
+                },20);
+            }  
+            function strokeControlPoint(ctx){
+                var r = 3;
+                ctx.strokeStyle = "rgba(0,0,0,1)";
+                strokeCircle(ctx,P0,r);
+                strokeCircle(ctx,P1,r);
+                strokeCircle(ctx,P2,r);
+            }
+            function strokeCircle(ctx,p,r){
+                if(ctx){
+                    ctx.beginPath();  
+                    ctx.arc(p.x,p.y,r,0,Math.PI*2,true); 
+                    ctx.stroke();
+                }
+            }
+            function strokeLine(ctx,P0,P1){
+                ctx.beginPath(); 
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = "rgba(205,205,205,1)";
+                ctx.moveTo(P0.x,P0.y);
+                ctx.lineTo(P1.x,P1.y);
+                ctx.stroke();
+            }
+            var P = {};
+            var NP = {};
+            function strokeBezierLine(ctx,P0,P1){
+                if(t > 1){
+                    t = 0;
+                    ctx.clearRect(0,0,300,300);
+                    renderUI(ctx);
+                } 
+                P = { 
+                    x : (1-t)*(1-t)*P0.x+2*t*(1-t)*P1.x+t*t*P2.x,
+                    y : (1-t)*(1-t)*P0.y+2*t*(1-t)*P1.y+t*t*P2.y
+                };
+                t += 0.01;
+                NP = {
+                    x : (1-t)*(1-t)*P0.x+2*t*(1-t)*P1.x+t*t*P2.x,
+                    y : (1-t)*(1-t)*P0.y+2*t*(1-t)*P1.y+t*t*P2.y
+                }
+                ctx.beginPath(); 
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = "rgba(255,0,0,1)";
+                ctx.moveTo(P.x,P.y);
+                ctx.lineTo(NP.x,NP.y);
+                ctx.stroke();
+            }
+
+            function renderUI(ctx){
+                //绘制起始点、控制点、终点  
+                strokeControlPoint(ctx);
+                strokeLine(ctx,{x:P0.x+2.5,y:P0.y-2.5},{x:P1.x-2.5,y:P1.y+2.5});
+                strokeLine(ctx,{x:P1.x+2.5,y:P1.y+2.5},{x:P2.x-2.5,y:P2.y-2.5});
+            }
+            
+        })();
+    &lt;/script&gt;
+  </code>
+</pre>
