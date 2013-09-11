@@ -6,3 +6,53 @@ category : lessons
 tags : [git,gitlab]
 summary : "最近做了品牌实效的项目，前端代码使用gitlab自主发布。这个过程是非常简单但并不愉悦，对于很多使用惯了svn的小伙伴可能在使用git的时候会出现很多问题，我在使用的时候也是有很多棘手的问题。然后还要使用gitlab的发布功能发布，也有不少问题。在此跟大家分享下这个过程。"
 ---
+
+{% include JB/setup %}
+
+<div class="content">
+	<p>最近做的品牌实效的项目，用到了gitlab的发布功能，把过程及要注意的事项分享出来，让小伙伴们可以更好的自主发布前端代码。</p>
+
+	<p>如果小伙伴们还没有使用过git，那朋友们可以先去看看相关的简单命令。只要有一些简单的知识就够了。然后gitlab这个东西是阿里集团内部git仓库，暂时这么理解吧，所以小伙伴需要登录注册。<a href="http://gitlab.alibaba-inc.com"  target="_blank">点这里</a></p>
+
+	<p>我们需要发布代码，需要有个项目，就是你代码放什么地方，拿品牌实效项目将，我一坨一坨的压缩代码，就要放到一个叫 brandmanage 的项目里面。由于我们gitlab的限制，我们的所有project都要隶属于一个组。这个组需要小伙伴们申请，阿里妈妈广告ux的同学的组已经有了，叫mm。我们发布代码往往是先发测试版本，倒是真正发布的时候再发正式版本。所以我们的组必须有发布权限的，这个需要申请。自己私下建的组是没有发布权限的。mm的组管理员有权限在本组下建项目的，说了那么多废话，其实就是一句话，大家有项目的话@左莫@逸才帮大家在mm组下建个项目即可。</p>
+
+	<p>然后就是打开你的git bash或者命令行。把项目clone到一个地方。</p>
+
+	<p>git clone git@gitlab.alibaba-inc.com:mm/brandmanage.git</p>
+
+	<p>然后进去到项目文件夹，你会发现它是空的，废话嘛新建的项目怎么会有东西。你可以新建发布分支了。根据gitlab的规则，我们需要建立daily分支用于测试发布</p>
+
+	<p>git checkout -b daily/2013.9.12</p>
+
+	<p>daily分支必须符合，daily/数字.数字.数字的规则。这样才可以发</p>
+
+	<p>然后尽情的折腾吧，折腾好了，需要一个build文件夹里面放你需要发布的代码。到时候发布只发布build下面的代码。</p>
+
+	<p>git push origin daily/2013.9.12</p>
+
+	<p>系统自动会更新代码发布。</p>
+
+	<p style="text-align:center;">
+        <img src="{{site.url}}/images/demos/2013-9-11/1.jpg">
+    </p>
+
+    <P>这个样子就算成功了。这样大家就可以访问以下路径 http://assets.daily.taobao.net/g/组名/库名/时间戳，解释下，组名就是你项目所在的组，ux的组名上面讲了是mm，项目名不解释了，时间戳也可以叫版本就是daily/后面的哪串数字。举个例子 http://assets.daily.taobao.net/g/mm/brandmanage/2013.9.12/,这个路径就是刚才发布的daily分支，这个路径找的就是build，你可以认为是你build文件夹的代替路径。</P>
+
+    <p>如果有更新，就执行如下代码</p>
+    <p>git add .</p>
+    <p>git commit -m 'write somthing you like'</p>
+    <p>git push origin daily/2013.9.12</p>
+    <p>系统会重新打包，发布新的代码</p>
+
+    <p>发布正式版怎么办，2个命令全搞定</p>
+    <p>git tag publish/2013.9.12</p>
+    <p>git push origin publish/2013.9.12:publish/2013.9.12</p>
+    <p>注意几点 1 publish/的那串数字和daily后的保持一致</p>
+    <p>			2 发布正式版后对应的daily远程分支会被删除。如果你再发布相同的daily/2013.9.12系统会告诉你已经建立里程碑不可以发了。</p>
+    <p>         3 那我发布错了，还想改下怎么办，重新拉一个daily分支，提交，再次publish。如此即可。</p>
+    <p>发布完成的访问路径是 http://g.tbcdn.cn/组名/库名/时间戳/，跟daily环境只是域名不同。</p>
+
+    <p>参考资料</p>
+    <p><a href="http://gitref.org/zh/" target="_blank">git参考手册</a></p>
+    <p><a href="http://docs.alibaba-inc.com/pages/viewpage.action?spm=0.0.0.0.YFqF30&pageId=114000704#" target="_blank">gitlab FAQ问答</a></p>
+</div>
