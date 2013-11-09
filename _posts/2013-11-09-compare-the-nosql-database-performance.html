@@ -1,0 +1,91 @@
+---
+layout: post
+title: MemcacheDB, Tokyo Tyrant, Redis性能测试
+subtitle: 对于In-Memory类型的数据库性能的比较。
+category : lessons
+tags : [in-memory,db,MemcaheDB,Tokyo Tyrant,Redis]
+summary : "今天看了下关于数据库的知识，了解到最近类似no-sql的数据很火。查访之下看到数据原来水这么深。了解到redis的一些知识。横向对比下类似的数据。发出一份数据。这个我基本是翻译的。并非个人测试数据。"
+---
+{% include JB/setup %}
+
+<div id="J_content">
+<p>今天看了下关于数据库的知识，了解到最近类似no-sql的数据很火。查访之下看到数据原来水这么深。了解到redis的一些知识。横向对比下类似的数据。发出一份数据。这个我基本是翻译的。并非个人测试数据。</p>
+
+<h4 class="text-info">搜索引擎抓取页面的过程</h4>
+<p>这里知识对于各个数据库 set() 和 get() 方法的测试。</p>
+<p>MemcacheDB, use memcached client protocol.</p>
+<p>Tokyo Tyrant (Tokyo Cabinet), use memcached client protocol</p>
+<p>Redis, use JRedis Java client</p>
+
+<h4 class="text-info">测试环境</h4>
+
+<p>硬件环境：</p>
+<p>2 Linux boxes in a LAN, 1 server and 1 test client</p>
+<p>Linux Centos 5.2 64bit</p>
+<p>Intel(R) Xeon(R) CPU E5410  @ 2.33GHz (L2 cache: 6M), Quad-Core * 2</p>
+<p>8G memory</p>
+<p>SCSI disk (standalone disk, no other access)</p>
+
+<p>软件环境：</p>
+<p>某君会思考为什么这么做，google官方给出了2个理由。来看下</p>
+<p>db-4.7.25.tar.gz</p>
+<p>libevent-1.4.11-stable.tar.gz</p>
+<p>memcached-1.2.8.tar.gz</p>
+<p>memcachedb-1.2.1-beta.tar.gz</p>
+<p>redis-0.900_2.tar.gz</p>
+<p>tokyocabinet-1.4.9.tar.gz</p>
+<p>tokyotyrant-1.1.9.tar.gz</p>
+
+<h4 claa="text-info">数据库配置</h4>
+<p>Memcachedb startup parameter</p>
+<p>Test 100 bytes</p>
+<p>./memcachedb -H /data5/kvtest/bdb/data -d -p 11212 -m 2048 -N -L 8192
+(Update: As mentioned by Steve, the 100-byte-test missed the -N paramter, so I added it and updated the data)</p>
+<p>Test 20k bytes</p>
+<p>./memcachedb -H /data5/kvtest/mcdb/data -d -p 11212 -b 21000 -N -m 2048</p>
+
+<p>Tokyo Tyrant (Tokyo Cabinet) configuration</p>
+<p>Use default Tokyo Tyrant sbin/ttservctl</p>
+<p>use .tch database, hashtable database</p>
+
+<p>ulimsiz=”256m”</p>
+<p>sid=1</p>
+<p>dbname=”$basedir/casket.tch#bnum=50000000″ # default 1M is not enough!</p>
+<p>maxcon=”65536″</p>
+<p>retval=0</p>
+
+<p>Redis configuration</p>
+<p>timeout 300</p>
+<p>save 900 1</p>
+<p>save 300 10</p>
+<p>save 60 10000</p>
+<p># no maxmemory settings</p>
+
+<h4 class="text-info">测试客户端</h4>
+<p>Client in Java, JDK1.6.0, 16 threads
+Use Memcached client java_memcached-release_2.0.1.jar
+JRedis client for Redis test, another JDBC-Redis has poor performance.</p>
+
+<h4 class="text-info">测试数据</h4>
+<p>小数据测试，1-5,000,000为key值，100字节的字符串为value，测试读取数据。如下</p>
+<img src="{{site.url}}/images/demos/2013-11-9/key-value-performance-1.png">
+<img src="{{site.url}}/images/demos/2013-11-9/data-1.png">
+
+<p>大数据测试，1-5,000,000为key值，20k字节的字符串为value，测试读取数据。如下</p>
+<img src="{{site.url}}/images/demos/2013-11-9/key-value-performance-2.png">
+<img src="{{site.url}}/images/demos/2013-11-9/data-2.png">
+
+<h4 class="text-info">总结</h4>
+<p>redis在dump数据的时候，会fork出一个子进程，理论上child进程所占用的内存和parent是一样的，比如parent占用的内存为8G，这个时候也要同样分配8G的内存给child,如果内存无法负担，往往会造成redis服务器的down机或者IO负载过高，效率下降。</p>
+<p>关于redis的内存分配设置方式，可以参考redis的设置命令 <code>/proc/sys/vm/overcommit_memory </code>, 值为0，1，2. </p>
+<p>0， 表示内核将检查是否有足够的可用内存供应用进程使用；如果有足够的可用内存，内存申请允许；否则，内存申请失败，并把错误返回给应用进程。</p>
+<p>1， 表示内核允许分配所有的物理内存，而不管当前的内存状态如何。</p>
+<p>2， 表示内核允许分配超过所有物理内存和交换空间总和的内存</p>
+<p>所以这里比较优化的Redis内存分配策略应该设置为 1（表示内核允许分配所有的物理内存，而不管当前的内存状态如何）</p>
+
+<p>在小数据的查询和存储方面，redis的效率还是很好的。但是大数据的下载就比较慢。而mamcahe在大数据的表现也比较差。综合以上考虑，像是视频网站比较适合tokyo tyrant，下载稳定速度快。而社交类型，数据不大，要求读写速度的网站比较适合redis，redis也比较时候复杂的数据挖掘。小数据读写速度都令人满意。</p>
+
+<p>原帖链接发出来：</p>
+<a href="http://timyang.net/data/mcdb-tt-redis/" target="_blank"><code>http://timyang.net/data/mcdb-tt-redis/</code></a>
+
+</div>
