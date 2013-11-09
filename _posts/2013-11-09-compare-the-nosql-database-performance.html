@@ -81,7 +81,7 @@ JRedis client for Redis test, another JDBC-Redis has poor performance.</p>
 <p>2， 表示内核允许分配超过所有物理内存和交换空间总和的内存</p>
 <p>所以这里比较优化的Redis内存分配策略应该设置为 1（表示内核允许分配所有的物理内存，而不管当前的内存状态如何）</p>
 
-<p>在小数据的查询和存储方面，redis的效率还是很好的。但是大数据的下载就比较慢。而mamcahe在大数据的表现也比较差。综合以上考虑，像是视频网站比较适合tokyo tyrant，下载稳定速度快。而社交类型，数据不大，要求读写速度的网站比较适合redis，redis也比较时候复杂的数据挖掘。小数据读写速度都令人满意。</p>
+<p>在小数据的查询和存储方面，redis的效率还是很好的。但是大数据的下载就比较慢。而mamcahe在大数据的表现也比较差。综合以上考虑，像是视频网站比较适合tokyo tyrant，下载稳定速度快。而社交类型，数据不大，要求读写速度的网站比较适合redis，redis也比较适合复杂的数据挖掘。小数据读写速度都令人满意。</p>
 
 <p>原帖链接发出来：</p>
 <a href="http://timyang.net/data/mcdb-tt-redis/" target="_blank"><code>http://timyang.net/data/mcdb-tt-redis/</code></a>
